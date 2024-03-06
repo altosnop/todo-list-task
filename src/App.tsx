@@ -1,17 +1,8 @@
 /* eslint-disable @typescript-eslint/no-extra-parens */
 import React from 'react'
 import {
-  TextField,
-  Button,
   Box,
-  InputAdornment,
   List,
-  ListItem,
-  IconButton,
-  ListItemButton,
-  ListItemIcon,
-  Checkbox,
-  ListItemText,
   FormControl,
   Container,
   FormLabel,
@@ -21,40 +12,23 @@ import {
   Typography,
   Divider,
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
+import AddInput from './components/AddInput/AddInput'
+import RecordItem from './components/RecordItem/RecordItem'
+import { useAppSelector } from './hooks/useAppSelector'
+import {
+  completedCountSelector,
+  notCompletedCountSelector,
+  recordsSelector,
+} from './store/records/recordsSelectors'
 
 const App = (): React.ReactElement => {
-  const [checked, setChecked] = React.useState([0])
-
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value)
-    const newChecked = [...checked]
-
-    if (currentIndex === -1) {
-      newChecked.push(value)
-    } else {
-      newChecked.splice(currentIndex, 1)
-    }
-
-    setChecked(newChecked)
-  }
+  const records = useAppSelector(recordsSelector)
+  const completedCount = useAppSelector(completedCountSelector)
+  const notCompletedCount = useAppSelector(notCompletedCountSelector)
 
   return (
     <Container maxWidth="xl">
-      <TextField
-        sx={{
-          marginBottom: 5,
-        }}
-        fullWidth
-        label="Record description"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Button variant="contained">Add</Button>
-            </InputAdornment>
-          ),
-        }}
-      />
+      <AddInput />
 
       <Box
         sx={{
@@ -81,6 +55,7 @@ const App = (): React.ReactElement => {
             />
           </RadioGroup>
         </FormControl>
+
         <Box
           sx={{
             display: 'flex',
@@ -93,48 +68,29 @@ const App = (): React.ReactElement => {
             padding: 1,
           }}
         >
-          <Typography variant="subtitle1">Completed - 1</Typography>
+          <Typography variant="subtitle1">
+            Completed - {completedCount}
+          </Typography>
           <Divider orientation="vertical" flexItem sx={{ margin: '3px 5px' }} />
-          <Typography variant="subtitle1">Current - 3</Typography>
+          <Typography variant="subtitle1">
+            Current - {notCompletedCount}
+          </Typography>
         </Box>
       </Box>
 
       <List sx={{ width: '100%' }}>
-        {[0, 1, 2, 3].map(value => {
-          const labelId = `checkbox-list-label-${value}`
-
-          return (
-            <ListItem
-              key={value}
-              secondaryAction={
-                <IconButton edge="end" aria-label="comments">
-                  <DeleteIcon />
-                </IconButton>
-              }
-              disablePadding
-            >
-              <ListItemButton
-                role={undefined}
-                onClick={handleToggle(value)}
-                dense
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    edge="start"
-                    checked={checked.indexOf(value) !== -1}
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{ 'aria-labelledby': labelId }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  id={labelId}
-                  primary="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas, cupiditate?"
-                />
-              </ListItemButton>
-            </ListItem>
-          )
-        })}
+        {records.length ? (
+          records.map(record => {
+            return <RecordItem key={record.id} record={record} />
+          })
+        ) : (
+          <Typography
+            variant="subtitle1"
+            sx={{ color: 'gray', fontStyle: 'italic' }}
+          >
+            Add records to display
+          </Typography>
+        )}
       </List>
     </Container>
   )
