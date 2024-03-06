@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-extra-parens */
-import React from 'react'
+import React, { ChangeEvent, ReactElement, useState } from 'react'
 import {
   Box,
   List,
@@ -10,21 +9,28 @@ import {
   FormControlLabel,
   Radio,
   Typography,
-  Divider,
 } from '@mui/material'
 import AddInput from './components/AddInput/AddInput'
 import RecordItem from './components/RecordItem/RecordItem'
-import { useAppSelector } from './hooks/useAppSelector'
-import {
-  completedCountSelector,
-  notCompletedCountSelector,
-  recordsSelector,
-} from './store/records/recordsSelectors'
+import { useAppSelector } from './service/useAppSelector'
+import { recordsSelector } from './store/records/recordsSelectors'
+import RecordsCounter from './components/RecordsCounter/RecordsCounter'
 
-const App = (): React.ReactElement => {
+const App = (): ReactElement => {
+  const [filterValue, setFilterValue] = useState<string>('all')
+
   const records = useAppSelector(recordsSelector)
-  const completedCount = useAppSelector(completedCountSelector)
-  const notCompletedCount = useAppSelector(notCompletedCountSelector)
+
+  const handleFilterChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setFilterValue(event.target.value)
+  }
+
+  const filteredRecords =
+    filterValue === 'all'
+      ? records
+      : filterValue === 'current'
+        ? records.filter(record => !record.completed)
+        : records.filter(record => record.completed)
 
   return (
     <Container maxWidth="xl">
@@ -41,7 +47,7 @@ const App = (): React.ReactElement => {
       >
         <FormControl>
           <FormLabel id="demo-row-radio-buttons-group-label">Filter</FormLabel>
-          <RadioGroup row>
+          <RadioGroup row value={filterValue} onChange={handleFilterChange}>
             <FormControlLabel value="all" control={<Radio />} label="All" />
             <FormControlLabel
               value="current"
@@ -55,42 +61,22 @@ const App = (): React.ReactElement => {
             />
           </RadioGroup>
         </FormControl>
-
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-            bgcolor: 'background.paper',
-            color: 'text.secondary',
-            padding: 1,
-          }}
-        >
-          <Typography variant="subtitle1">
-            Completed - {completedCount}
-          </Typography>
-          <Divider orientation="vertical" flexItem sx={{ margin: '3px 5px' }} />
-          <Typography variant="subtitle1">
-            Current - {notCompletedCount}
-          </Typography>
-        </Box>
+        <RecordsCounter />
       </Box>
 
       <List sx={{ width: '100%' }}>
-        {records.length ? (
-          records.map(record => {
+        {records.length ? 
+          filteredRecords.map(record => {
             return <RecordItem key={record.id} record={record} />
           })
-        ) : (
+          : 
           <Typography
             variant="subtitle1"
             sx={{ color: 'gray', fontStyle: 'italic' }}
           >
             Add records to display
           </Typography>
-        )}
+        }
       </List>
     </Container>
   )

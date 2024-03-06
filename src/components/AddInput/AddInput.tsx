@@ -1,22 +1,14 @@
-/* eslint-disable @typescript-eslint/no-extra-parens */
 import { Button, InputAdornment, TextField } from '@mui/material'
-import React, { useState } from 'react'
-import { useAppDispatch } from '../../hooks/useAppDispatch'
+import React, { ReactElement, useState } from 'react'
+import { useAppDispatch } from '../../service/useAppDispatch'
 import { addRecord } from '../../store/records/recordsSlice'
+import isValidRecord from '../../service/isValidRecord'
 
-const AddInput = (): React.ReactElement => {
+const AddInput = (): ReactElement => {
   const dispatch = useAppDispatch()
 
   const [record, setRecord] = useState<string>('')
   const [recordError, setRecordError] = useState<boolean>(false)
-
-  const isValidRecord = (record: string): boolean => {
-    if (record.trim().length > 0 && record.trim().length <= 20) {
-      return true
-    } else {
-      return false
-    }
-  }
 
   const validateRecord = (record: string): void => {
     if (isValidRecord(record)) {
@@ -57,13 +49,13 @@ const AddInput = (): React.ReactElement => {
         }
         label="Record description"
         InputProps={{
-          endAdornment: (
+          endAdornment: 
             <InputAdornment position="end">
               <Button variant="contained" type="submit" disabled={recordError}>
                 Add
               </Button>
             </InputAdornment>
-          ),
+          ,
         }}
       />
     </form>

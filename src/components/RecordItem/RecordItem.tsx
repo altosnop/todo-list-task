@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import {
   Checkbox,
   IconButton,
@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Record } from '../../types/types'
-import { useAppDispatch } from '../../hooks/useAppDispatch'
+import { useAppDispatch } from '../../service/useAppDispatch'
 import {
   deleteRecord,
   toggleItemCompleted,
@@ -19,7 +19,7 @@ interface RecordProps {
   record: Record
 }
 
-const RecordItem = ({ record }: RecordProps): React.ReactElement => {
+const RecordItem = ({ record }: RecordProps): ReactElement => {
   const dispatch = useAppDispatch()
 
   const handleToggleItemCompleted = (): void => {
